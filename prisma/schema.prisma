@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  fName    String
+  lName    String
+  email    String   @unique
+  password String
+  role     String
+
+  MedicalCertificate MedicalCer? @relation(fields: [medicalCerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  medicalCerId Int?
+
+  MEX MEX[]
+}
+
+model MedicalCer {
+  id             Int     @id @default(autoincrement())
+  medicalLicense Int
+  User           User[]
+}
+
+model MEX {
+  id            Int     @id @default(autoincrement())
+  docID         Int       
+  hn            Int
+  chiefComplaint String
+  presentHistory String
+  examination   String
+  dx            String
+  rx            String
+  procedure     String
+  appointment   String?
+
+  RxList   RxList[]
+  ExPhoto  ExPhoto[]
+  User     User     @relation(fields: [docID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model RxList {
+  id          Int     @id @default(autoincrement())
+  hn          Int
+  medicalName String
+  quantity    Int
+  use         String
+  note        String?
+
+  MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  mexId Int
+}
+
+model ExPhoto {
+  id     Int    @id @default(autoincrement())
+  photo  String
+
+  MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  mexId Int
+}
