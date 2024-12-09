@@ -16,7 +16,7 @@ dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const app = express();
-const PORT = 3001;
+const PORT = 8000;
 const prisma = new PrismaClient();
 app.use(cors());
 
