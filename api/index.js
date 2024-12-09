@@ -16,7 +16,7 @@ dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const app = express();
-const PORT = 8000;
+const PORT = 4000;
 const prisma = new PrismaClient();
 app.use(cors());
 
@@ -133,3 +133,5 @@ app.delete("/images/:mexId/delete", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+export default app;
