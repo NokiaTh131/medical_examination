@@ -4,6 +4,7 @@ import multer from "multer";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
 import crypto from "crypto";
+import mex from "./mex.js";
 import {
   S3Client,
   PutObjectCommand,
@@ -16,10 +17,11 @@ dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const app = express();
-const PORT = 4000;
+const PORT = 3001;
 const prisma = new PrismaClient();
 app.use(cors());
-
+app.use(mex);
+app.use(express.json());
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {

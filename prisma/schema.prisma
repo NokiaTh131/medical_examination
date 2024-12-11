@@ -29,7 +29,7 @@ model MedicalCer {
 
 model MEX {
   id            Int     @id @default(autoincrement())
-  docID         Int       
+  docID         Int
   hn            Int
   chiefComplaint String
   presentHistory String
@@ -38,6 +38,7 @@ model MEX {
   rx            String
   procedure     String
   appointment   String?
+  date          DateTime  @default(now())
 
   RxList   RxList[]
   ExPhoto  ExPhoto[]
