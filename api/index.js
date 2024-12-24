@@ -1,16 +1,17 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import multer from "multer";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+// import { getSignedUrl } from "@aws-sdk/s3-request-presigner"; deprecate
 import sharp from "sharp";
 import crypto from "crypto";
 import mex from "./mex.js";
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} from "@aws-sdk/client-s3";
+import * as Minio from "minio";
+// import {
+//   S3Client,
+//   PutObjectCommand,
+//   GetObjectCommand,
+//   DeleteObjectCommand,
+// } from "@aws-sdk/client-s3"; deprecate
 import dotenv from "dotenv";
 import cors from "cors";
 dotenv.config();
@@ -22,12 +23,28 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(mex);
 app.use(express.json());
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
+
+//aws client
+// const s3Client = new S3Client({
+//   region: process.env.AWS_REGION,
+//   credentials: {
+//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   },
+// });
+
+//minIO client
+const minioClient = new Minio.Client({
+  endPoint: "s3.ap-southeast-1.amazonaws.com",
+  //local endpoint
+  //endPoint: "play.min.io",
+  //port: 9000,
+  useSSL: true,
+  accessKey: process.env.AWS_ACCESS_KEY_ID,
+  secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+  // accessKey: "minioadmin", // Replace with your MinIO access key
+  // secretKey: "minioadmin",
+  region: process.env.AWS_REGION, //remove this when use local endpoint
 });
 
 const generateFileName = (bytes = 32) =>
@@ -36,6 +53,7 @@ const generateFileName = (bytes = 32) =>
 async function uploadImageToS3(file, fileName) {
   const resizedImageBuffer = await sharp(file).toBuffer();
 
+  /* s3 version
   const params = {
     Bucket: process.env.AMPLIFY_BUCKET,
     Key: `${fileName}`,
@@ -45,6 +63,14 @@ async function uploadImageToS3(file, fileName) {
 
   const command = new PutObjectCommand(params);
   await s3Client.send(command);
+  */
+
+  /*minIO version*/
+  await minioClient.putObject(
+    process.env.AMPLIFY_BUCKET,
+    fileName,
+    resizedImageBuffer
+  );
 
   return fileName;
 }
@@ -82,20 +108,25 @@ app.post("/images/upload/:id", upload.array("file", 12), async (req, res) => {
 app.get("/images/:mexid", async (req, res) => {
   try {
     const id = req.params.mexid;
-    const allimages = await prisma.exPhoto.findMany({
+    const all_images = await prisma.exPhoto.findMany({
       where: { mexId: Number(id) },
       orderBy: { id: "asc" },
     });
     const imagesWithUrls = await Promise.all(
-      allimages.map(async (image) => {
-        const getObjectParams = {
-          Bucket: process.env.AMPLIFY_BUCKET,
-          Key: image.photo,
-        };
-        const command = new GetObjectCommand(getObjectParams);
-        const url = await getSignedUrl(s3Client, command, {
-          expiresIn: 60 * 5,
-        });
+      all_images.map(async (image) => {
+        // const getObjectParams = { // this use when aws-sdk s3 version directly
+        //   Bucket: process.env.AMPLIFY_BUCKET,
+        //   Key: image.photo,
+        // };
+        // const command = new GetObjectCommand(getObjectParams);
+        // const url = await getSignedUrl(s3Client, command, {
+        //   expiresIn: 60 * 5,
+        // });
+        const url = await minioClient.presignedGetObject(
+          process.env.AMPLIFY_BUCKET,
+          image.photo,
+          60 * 60
+        );
         return {
           ...image,
           imageUrl: url,
@@ -117,11 +148,13 @@ app.delete("/images/:mexId/delete", async (req, res) => {
     const image = await prisma.exPhoto.findUnique({
       where: { id: Number(id), mexId: Number(mex_id) },
     });
-    const deleteParams = {
-      Bucket: process.env.AMPLIFY_BUCKET,
-      Key: image?.photo,
-    };
-    await s3Client.send(new DeleteObjectCommand(deleteParams));
+    //this use when use aws-sdk s3 version
+    // const deleteParams = {
+    //   Bucket: process.env.AMPLIFY_BUCKET,
+    //   Key: image?.photo,
+    // };
+    // await s3Client.send(new DeleteObjectCommand(deleteParams));
+    await minioClient.removeObject(process.env.AMPLIFY_BUCKET, image.photo);
     await prisma.exPhoto.delete({
       where: { id: Number(id), mexId: Number(mex_id) },
     });

@@ -124,6 +124,13 @@ mex.put("/api/updatemex/:id", async (req, res) => {
   }
 });
 
+//api fetch from patient information group
+mex.get("/patient/:patient_id", async (req, res) => {
+  //get patient by id
+  const patient_id = req.params.patient_id;
+  res.send({ patient_id: patient_id });
+});
+
 mex.delete(`/api/deletemex`, async (req, res) => {
   try {
     const id = parseInt(req.query.id); // Convert `id` to an integer (if necessary)
