@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -29,11 +35,10 @@ model MedicalCer {
 
 model MEX {
   id            Int     @id @default(autoincrement())
-  docID         Int
+  docID         Int       
   hn            Int
   chiefComplaint String
   presentHistory String
-  examination   String
   dx            String
   rx            String
   procedure     String
@@ -41,8 +46,15 @@ model MEX {
   date          DateTime  @default(now())
 
   RxList   RxList[]
-  ExPhoto  ExPhoto[]
+  pdfMEX   pdfMEX[]
   User     User     @relation(fields: [docID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model pdfMEX {
+  id          Int     @id @default(autoincrement())
+  fileName    String
+
+  MEX MEX @relation(fields: [id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model RxList {
@@ -52,14 +64,6 @@ model RxList {
   quantity    Int
   use         String
   note        String?
-
-  MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  mexId Int
-}
-
-model ExPhoto {
-  id     Int    @id @default(autoincrement())
-  photo  String
 
   MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   mexId Int
