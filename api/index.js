@@ -50,10 +50,7 @@ const minioClient = new Minio.Client({
 const generateFileName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
 
-async function uploadImageToS3(file, fileName) {
-  const resizedImageBuffer = await sharp(file).toBuffer();
-
-  /* s3 version
+/* s3 version
   const params = {
     Bucket: process.env.AMPLIFY_BUCKET,
     Key: `${fileName}`,
@@ -65,100 +62,87 @@ async function uploadImageToS3(file, fileName) {
   await s3Client.send(command);
   */
 
-  /*minIO version*/
-  await minioClient.putObject(
-    process.env.AMPLIFY_BUCKET,
-    fileName,
-    resizedImageBuffer
-  );
+/*minIO version*/
 
+async function uploadFileToS3(file, fileName) {
+  /*minIO version*/
+  await minioClient.putObject(process.env.AMPLIFY_BUCKET, fileName, file);
   return fileName;
 }
-// upload
-app.post("/images/upload/:id", upload.array("file", 12), async (req, res) => {
+
+app.post("/pdf/:id", upload.single("file"), async (req, res) => {
   try {
     const mex_id = req.params.id;
-    const files = req.files;
-    if (!files) {
-      return res.json({ error: "File blob is required." }, { status: 400 });
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send({ error: "File blob is required." });
     }
-    const uploadFiles = [];
-    for (const file of files) {
-      if (file) {
-        const fileGenname = generateFileName();
-        const buffer = file.buffer;
-        const fileName = await uploadImageToS3(buffer, fileGenname);
-        await prisma.exPhoto.create({
-          data: {
-            photo: fileGenname,
-            mexId: Number(mex_id),
-          },
-        });
-        uploadFiles.push(fileName);
-      }
+    if (file) {
+      const buffer = file.buffer;
+      const filename = file.originalname;
+      await prisma.mEX.update({
+        where: {
+          id: Number(mex_id),
+        },
+        data: {
+          examination_filename: filename,
+        },
+      });
+      await uploadFileToS3(buffer, filename);
     }
     console.log("upload was success");
-    return res.send({ success: true, uploadFiles });
+    return res.send({ success: true });
   } catch (error) {
-    console.error("Error uploading image:", error);
-    res.send({ message: "Error uploading image" });
+    console.error("Error uploading file:", error);
+    res.send({ message: "Error uploading file" });
   }
 });
 
-app.get("/images/:mexid", async (req, res) => {
+//get specific single url to download examination file
+app.get("/pdf/:mex_id", async (req, res) => {
   try {
-    const id = req.params.mexid;
-    const all_images = await prisma.exPhoto.findMany({
-      where: { mexId: Number(id) },
-      orderBy: { id: "asc" },
+    const id = req.params.mex_id;
+    const files = await prisma.mEX.findMany({
+      where: { id: Number(id) },
     });
-    const imagesWithUrls = await Promise.all(
-      all_images.map(async (image) => {
-        // const getObjectParams = { // this use when aws-sdk s3 version directly
-        //   Bucket: process.env.AMPLIFY_BUCKET,
-        //   Key: image.photo,
-        // };
-        // const command = new GetObjectCommand(getObjectParams);
-        // const url = await getSignedUrl(s3Client, command, {
-        //   expiresIn: 60 * 5,
-        // });
+    const fileWithUrls = await Promise.all(
+      files.map(async (file) => {
         const url = await minioClient.presignedGetObject(
           process.env.AMPLIFY_BUCKET,
-          image.photo,
-          60 * 60
+          file.examination_filename,
+          30
         );
         return {
-          ...image,
-          imageUrl: url,
+          fileUrl: url,
         };
       })
     );
-
-    return res.send(imagesWithUrls);
+    return res.send(fileWithUrls);
   } catch (error) {
-    console.error("Error uploading image:", error);
     return res.status(400).send({ message: "Error loading image" });
   }
 });
 
-app.delete("/images/:mexId/delete", async (req, res) => {
+app.delete("/pdf/:mex_id", async (req, res) => {
   try {
-    const mex_id = req.params.mexId;
-    const id = req.query.id;
-    const image = await prisma.exPhoto.findUnique({
-      where: { id: Number(id), mexId: Number(mex_id) },
+    const mex_id = req.params.mex_id;
+    const file = await prisma.mEX.findUnique({
+      where: { id: Number(mex_id) },
     });
-    //this use when use aws-sdk s3 version
-    // const deleteParams = {
-    //   Bucket: process.env.AMPLIFY_BUCKET,
-    //   Key: image?.photo,
-    // };
-    // await s3Client.send(new DeleteObjectCommand(deleteParams));
-    await minioClient.removeObject(process.env.AMPLIFY_BUCKET, image.photo);
-    await prisma.exPhoto.delete({
-      where: { id: Number(id), mexId: Number(mex_id) },
+    await prisma.mEX.update({
+      where: {
+        id: Number(mex_id),
+      },
+      data: {
+        examination_filename: "examination was deleted",
+      },
     });
-    res.send({ message: "Project deleted" });
+
+    await minioClient.removeObject(
+      process.env.AMPLIFY_BUCKET,
+      String(file.examination_filename)
+    );
+    res.send({ message: "file deleted" });
   } catch (error) {
     res.status(400).send({ message: "error while delete" });
   }

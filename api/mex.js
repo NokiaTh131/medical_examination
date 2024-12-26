@@ -6,10 +6,6 @@ const prisma = new PrismaClient();
 mex.use(cors());
 mex.use(express.json()); // Middleware to parse JSON bodies
 
-mex.get(`/`, (req, res) => {
-  res.send("HelloWorld");
-});
-
 mex.post("/api/addmex", async (req, res) => {
   try {
     const {
@@ -17,12 +13,9 @@ mex.post("/api/addmex", async (req, res) => {
       hn,
       chiefComplaint,
       presentHistory,
-      examination,
       dx,
-      rx,
       procedure,
       appointment,
-      date,
     } = req.body;
     const newMEX = await prisma.mEX.create({
       data: {
@@ -30,12 +23,11 @@ mex.post("/api/addmex", async (req, res) => {
         hn,
         chiefComplaint,
         presentHistory,
-        examination,
         dx,
-        rx,
         procedure,
-        appointment, // Optional field
-        date: new Date(date),
+        appointment,
+        date: new Date(),
+        examination_filename: "No examination",
       },
     });
     res.send({ newMEX });
@@ -44,23 +36,26 @@ mex.post("/api/addmex", async (req, res) => {
   }
 });
 
-mex.get("/api/getallmex", async (req, res) => {
+//get all mex of interest patient
+mex.get("/api/getallmex/:patient_id", async (req, res) => {
   try {
+    const id = req.params.patient_id;
     const allMex = await prisma.mEX.findMany({
+      where: {
+        hn: Number(id),
+      },
       select: {
+        id: true,
         hn: true,
-        chiefComplaint: true,
-        rx: true,
-        procedure: true,
         date: true,
         User: {
-          // Assuming the related table is `User` and contains the doctor's name
           select: {
-            fName: true, // Replace `name` with the actual field in the related table
+            fName: true,
             lName: true,
           },
         },
       },
+      orderBy: { date: "desc" },
     });
     res.send(allMex);
   } catch (error) {
@@ -68,24 +63,34 @@ mex.get("/api/getallmex", async (req, res) => {
   }
 });
 
+//get specific medical examination
 mex.get("/api/getmex", async (req, res) => {
   try {
-    const id = parseInt(req.query.id); // Convert `id` to an integer (if necessary)
-
+    //mex_id
+    const id = parseInt(req.query.id);
+    const data = await fetch(`http://localhost:3001/pdf/${id}`, {
+      method: "GET",
+    });
+    const download_url = await data.json();
     const mex = await prisma.mEX.findUnique({
       where: {
-        id: id, // Find MEX by ID
+        id: id,
       },
       include: {
-        User: {
-          // Include User (doctor) related to the MEX
+        patientRecord: {
           select: {
-            fName: true, // First name of the doctor
-            lName: true, // Last name of the doctor
+            bloodPressure: true,
+            temperature: true,
+            respiratoryRate: true,
+          },
+        },
+        User: {
+          select: {
+            fName: true,
+            lName: true,
             MedicalCertificate: {
-              // Include the related MedicalCertificate
               select: {
-                medicalLicense: true, // Assuming medical license is the field you need
+                medicalLicense: true, // medical license is the field you need
               },
             },
           },
@@ -96,8 +101,12 @@ mex.get("/api/getmex", async (req, res) => {
     if (!mex) {
       return res.status(404).send({ message: "MEX not found" });
     }
+    const record_info = {
+      ...mex,
+      download_url,
+    };
 
-    res.send(mex);
+    res.send(record_info);
   } catch (error) {
     console.error("Error fetching MEX:", error);
     res.status(400).send({ message: "Error fetching MEX", error });
@@ -106,10 +115,8 @@ mex.get("/api/getmex", async (req, res) => {
 
 mex.put("/api/updatemex/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id); // Get the ID from the request params
+    const id = parseInt(req.params.id);
     const data = req.body;
-
-    // Update the MEX record with the provided data
     const updatedMEX = await prisma.mEX.update({
       where: {
         id: id,
@@ -144,6 +151,41 @@ mex.delete(`/api/deletemex`, async (req, res) => {
   } catch (error) {
     console.error("Error during delete:", error);
     res.status(400).send({ message: "Error to delete MEX", error });
+  }
+});
+
+//add patient record to database
+mex.post("/api/patient_record/:mex_id", async (req, res) => {
+  try {
+    const mexId = parseInt(req.params.mex_id);
+    const { bloodPressure, temperature, respiratoryRate } = req.body;
+    const newPatientRecord = await prisma.patientRecord.create({
+      data: {
+        bloodPressure,
+        temperature,
+        respiratoryRate,
+        mexId,
+      },
+    });
+
+    res.send({ newPatientRecord });
+  } catch (error) {
+    res.status(400).send({ message: "Error na kub", error });
+  }
+});
+
+//get single patient record of interest medical examination
+mex.get("/api/get_record/:mex_id", async (req, res) => {
+  try {
+    const mex_id = req.params.mex_id;
+    const Record = await prisma.patientRecord.findMany({
+      where: {
+        mexId: Number(mex_id),
+      },
+    });
+    res.send(Record);
+  } catch (error) {
+    res.status(400).send({ message: "Error na kub", error });
   }
 });
 

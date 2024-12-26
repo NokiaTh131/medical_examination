@@ -39,22 +39,15 @@ model MEX {
   hn            Int
   chiefComplaint String
   presentHistory String
+  examination_filename String
   dx            String
-  rx            String
   procedure     String
   appointment   String?
   date          DateTime  @default(now())
 
   RxList   RxList[]
-  pdfMEX   pdfMEX[]
+  patientRecord patientRecord[]
   User     User     @relation(fields: [docID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-}
-
-model pdfMEX {
-  id          Int     @id @default(autoincrement())
-  fileName    String
-
-  MEX MEX @relation(fields: [id], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model RxList {
@@ -65,6 +58,16 @@ model RxList {
   use         String
   note        String?
 
+  MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  mexId Int
+}
+
+
+model patientRecord {
+  id          Int     @id @default(autoincrement())
+  bloodPressure Float
+  temperature    Float
+  respiratoryRate  Float
   MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   mexId Int
 }
