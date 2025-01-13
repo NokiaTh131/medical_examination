@@ -52,7 +52,6 @@ model MEX {
 
 model RxList {
   id          Int     @id @default(autoincrement())
-  hn          Int
   medicalName String
   quantity    Int
   use         String

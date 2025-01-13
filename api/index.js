@@ -5,6 +5,7 @@ import multer from "multer";
 import sharp from "sharp";
 import crypto from "crypto";
 import mex from "./mex.js";
+import rx from "./rx.js";
 import * as Minio from "minio";
 // import {
 //   S3Client,
@@ -22,6 +23,7 @@ const PORT = 3001;
 const prisma = new PrismaClient();
 app.use(cors());
 app.use(mex);
+app.use(rx);
 app.use(express.json());
 
 //aws client
