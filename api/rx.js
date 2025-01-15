@@ -15,7 +15,7 @@ rx.use(express.json()); // Middleware to parse JSON bodies
 // Add a new medicine to the RxList
 rx.post("/api/rx", async (req, res) => {
   try {
-    const { medicalName, quantity, use, note, mexId } = req.body;
+    const { medicalName, quantity, use, note, mexId, unit } = req.body;
 
     const newMedicine = await prisma.rxList.create({
       data: {
@@ -24,6 +24,7 @@ rx.post("/api/rx", async (req, res) => {
         use,
         note,
         mexId,
+        unit,
       },
     });
 
