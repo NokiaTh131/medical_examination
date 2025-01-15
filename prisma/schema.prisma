@@ -41,8 +41,8 @@ model MEX {
   presentHistory String
   examination_filename String
   dx            String
-  procedure     String
-  appointment   String?
+  procedure     String @db.Text
+  appointment   String? @db.Text
   date          DateTime  @default(now())
 
   RxList   RxList[]
@@ -65,7 +65,7 @@ model RxList {
 
 model patientRecord {
   id          Int     @id @default(autoincrement())
-  bloodPressure Float
+  bloodPressure String
   temperature    Float
   respiratoryRate  Float
   MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
