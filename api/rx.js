@@ -13,7 +13,7 @@ rx.use(express.json()); // Middleware to parse JSON bodies
 // ---------------------------------
 
 // Add a new medicine to the RxList
-rx.post("/api/addmedicine", async (req, res) => {
+rx.post("/api/rx", async (req, res) => {
   try {
     const { medicalName, quantity, use, note, mexId } = req.body;
 
@@ -34,7 +34,7 @@ rx.post("/api/addmedicine", async (req, res) => {
 });
 
 // Delete a medicine by ID from the RxList
-rx.delete("/api/deletemedicine/:id", async (req, res) => {
+rx.delete("/api/rx/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -51,7 +51,7 @@ rx.delete("/api/deletemedicine/:id", async (req, res) => {
 });
 
 // Get all medicines associated with a specific MEX
-rx.get("/api/getmedicines/:mex_id", async (req, res) => {
+rx.get("/api/rx/:mex_id", async (req, res) => {
   try {
     const mexId = parseInt(req.params.mex_id);
 

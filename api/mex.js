@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 mex.use(cors());
 mex.use(express.json()); // Middleware to parse JSON bodies
 
-mex.post("/api/addmex", async (req, res) => {
+mex.post("/api/mex", async (req, res) => {
   try {
     const {
       docID,
@@ -37,7 +37,7 @@ mex.post("/api/addmex", async (req, res) => {
 });
 
 //get all mex of interest patient
-mex.get("/api/getallmex/:patient_id", async (req, res) => {
+mex.get("/api/mex/:patient_id", async (req, res) => {
   try {
     const id = req.params.patient_id;
     const allMex = await prisma.mEX.findMany({
@@ -64,11 +64,11 @@ mex.get("/api/getallmex/:patient_id", async (req, res) => {
 });
 
 //get specific medical examination
-mex.get("/api/getmex", async (req, res) => {
+mex.get("/api/mex", async (req, res) => {
   try {
     //mex_id
     const id = parseInt(req.query.id);
-    const data = await fetch(`http://localhost:3001/pdf/${id}`, {
+    const data = await fetch(`http://localhost:3001/file/${id}`, {
       method: "GET",
     });
     const download_url = await data.json();
@@ -113,7 +113,7 @@ mex.get("/api/getmex", async (req, res) => {
   }
 });
 
-mex.put("/api/updatemex/:id", async (req, res) => {
+mex.put("/api/mex/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = req.body;
@@ -138,7 +138,7 @@ mex.get("/patient/:patient_id", async (req, res) => {
   res.send({ patient_id: patient_id });
 });
 
-mex.delete(`/api/deletemex`, async (req, res) => {
+mex.delete(`/api/mex`, async (req, res) => {
   try {
     const id = parseInt(req.query.id); // Convert `id` to an integer (if necessary)
     await prisma.mEX.delete({
@@ -175,7 +175,7 @@ mex.post("/api/patient_record/:mex_id", async (req, res) => {
 });
 
 //get single patient record of interest medical examination
-mex.get("/api/get_record/:mex_id", async (req, res) => {
+mex.get("/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mex_id = req.params.mex_id;
     const Record = await prisma.patientRecord.findMany({

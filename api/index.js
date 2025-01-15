@@ -72,7 +72,7 @@ async function uploadFileToS3(file, fileName) {
   return fileName;
 }
 
-app.post("/pdf/:id", upload.single("file"), async (req, res) => {
+app.post("/api/file/:id", upload.single("file"), async (req, res) => {
   try {
     const mex_id = req.params.id;
     const file = req.file;
@@ -101,7 +101,7 @@ app.post("/pdf/:id", upload.single("file"), async (req, res) => {
 });
 
 //get specific single url to download examination file
-app.get("/pdf/:mex_id", async (req, res) => {
+app.get("/api/file/:mex_id", async (req, res) => {
   try {
     const id = req.params.mex_id;
     const files = await prisma.mEX.findMany({
@@ -125,7 +125,7 @@ app.get("/pdf/:mex_id", async (req, res) => {
   }
 });
 
-app.delete("/pdf/:mex_id", async (req, res) => {
+app.delete("/api/file/:mex_id", async (req, res) => {
   try {
     const mex_id = req.params.mex_id;
     const file = await prisma.mEX.findUnique({
