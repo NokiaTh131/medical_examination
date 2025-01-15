@@ -2,7 +2,7 @@ Scooby doo ❌
 
 Sceeby dee ✅
 
-# for who want to test add .env file include these API key
+# for who want to test, add .env file include these API key
 
 * DATABASE_URL="mysql://root:password@localhost:3306/db"
 * AWS_REGION=ap-southeast-1
