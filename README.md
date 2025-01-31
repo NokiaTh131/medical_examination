@@ -16,6 +16,9 @@
 * Prescription Print: make printable prescription according figma design
 * Treatment Print: Can print Treatment program of each medical examination
 * Examination file generation: adjust layout of medical examintion document file.
+* Auto calculated appointment (1,2,3,4)
+* Add stomach examination
+* Sidebar with all individual mex 
 
 ### part 2
 * Individual patient information page according figma
