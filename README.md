@@ -11,7 +11,7 @@
 
 ### part 1 (addition from sprint1)
 
-* change database: Procedure and Appointment Storage from MEX Table to individual Table.
+* change database: Procedure and Appointment Storage from MEX Table to individual Table.(done)
 * UX/UI: change layout according Figma designed, display status of process(when success display success,when fail display specific fail).
 * Prescription Print: make printable prescription according figma design
 * Treatment Print: Can print Treatment program of each medical examination
