@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -41,8 +41,8 @@ model MEX {
   presentHistory String
   examination_filename String
   dx            String
-  procedure     String @db.Text
-  appointment   String? @db.Text
+  procedure     Json
+  appointment   Json?
   date          DateTime  @default(now())
 
   RxList   RxList[]
