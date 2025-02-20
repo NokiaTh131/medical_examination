@@ -48,13 +48,10 @@ mex.get("/api/mex/:patient_id", async (req, res) => {
         id: true,
         hn: true,
         date: true,
-        User: {
-          select: {
-            fName: true,
-            lName: true,
-          },
-        },
+        dx: true,
+        RxList: true,
       },
+
       orderBy: { date: "desc" },
     });
     res.send(allMex);
@@ -95,6 +92,7 @@ mex.get("/api/mex", async (req, res) => {
             },
           },
         },
+        RxList: true,
       },
     });
 
