@@ -68,7 +68,10 @@ const generateFileName = (bytes = 32) =>
 
 async function uploadFileToS3(file, fileName) {
   /*minIO version*/
-  await minioClient.putObject(process.env.AMPLIFY_BUCKET, fileName, file);
+  await minioClient.putObject(process.env.AMPLIFY_BUCKET, fileName, file, {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": "inline",
+  });
   return fileName;
 }
 
