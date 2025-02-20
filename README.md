@@ -22,6 +22,6 @@
 
 ### part 2
 * Individual patient information page according figma
-* Page that containt list of medical record
+* Page that contain list of medical record (done)
 * Printable Medical certificate feature
 * Printable patient apoointment
