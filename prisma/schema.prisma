@@ -13,29 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int      @id @default(autoincrement())
-  fName    String
-  lName    String
-  email    String   @unique
-  password String
-  role     String
-
-  MedicalCertificate MedicalCer? @relation(fields: [medicalCerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  medicalCerId Int?
-
-  MEX MEX[]
-}
-
-model MedicalCer {
-  id             Int     @id @default(autoincrement())
-  medicalLicense Int
-  User           User[]
-}
 
 model MEX {
   id            Int     @id @default(autoincrement())
-  docID         Int       
+  docID         String       
   hn            Int
   chiefComplaint String
   presentHistory String
@@ -47,7 +28,6 @@ model MEX {
 
   RxList   RxList[]
   patientRecord patientRecord[]
-  User     User     @relation(fields: [docID], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model RxList {

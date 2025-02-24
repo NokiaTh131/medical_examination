@@ -81,17 +81,6 @@ mex.get("/api/mex", async (req, res) => {
             respiratoryRate: true,
           },
         },
-        User: {
-          select: {
-            fName: true,
-            lName: true,
-            MedicalCertificate: {
-              select: {
-                medicalLicense: true, // medical license is the field you need
-              },
-            },
-          },
-        },
         RxList: true,
       },
     });
