@@ -25,3 +25,4 @@
 * Page that contain list of medical record (done)
 * Printable Medical certificate feature
 * Printable patient apoointment
+* check available date in appointment system
