@@ -639,10 +639,11 @@ mex.delete(`/api/mex`, async (req, res) => {
 mex.post("/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mexId = parseInt(req.params.mex_id);
-    const { bloodPressure, temperature, respiratoryRate } = req.body;
+    const { bloodPressure, pulse, temperature, respiratoryRate } = req.body;
     const newPatientRecord = await prisma.patientRecord.create({
       data: {
         bloodPressure,
+        pulse,
         temperature,
         respiratoryRate,
         mexId,

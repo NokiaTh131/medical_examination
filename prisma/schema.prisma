@@ -46,6 +46,7 @@ model RxList {
 model patientRecord {
   id          Int     @id @default(autoincrement())
   bloodPressure String
+  pulse         String
   temperature    Float
   respiratoryRate  Float
   MEX MEX @relation(fields: [mexId], references: [id], onUpdate: Cascade, onDelete: Cascade)
