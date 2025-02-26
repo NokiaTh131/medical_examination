@@ -15,6 +15,7 @@ import * as Minio from "minio";
 // } from "@aws-sdk/client-s3"; deprecate
 import dotenv from "dotenv";
 import cors from "cors";
+import { swaggerUi, swaggerSpec } from "../swagger.js";
 dotenv.config();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -25,6 +26,7 @@ app.use(cors());
 app.use(mex);
 app.use(rx);
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //aws client
 // const s3Client = new S3Client({
@@ -75,6 +77,65 @@ async function uploadFileToS3(file, fileName) {
   return fileName;
 }
 
+/**
+ * @swagger
+ * /api/file/{id}:
+ *   post:
+ *     tags:
+ *       - Examination pdf file
+ *     summary: Upload a file and update examination record
+ *     description: Uploads a file to S3 and updates the `examination_filename` field in the database for a specific MEX record.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the MEX record to update.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to upload.
+ *     responses:
+ *       200:
+ *         description: File uploaded successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: File is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "File blob is required."
+ *       500:
+ *         description: Internal server error while uploading file.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error uploading file"
+ */
+
 app.post("/api/file/:id", upload.single("file"), async (req, res) => {
   try {
     const mex_id = req.params.id;
@@ -104,6 +165,47 @@ app.post("/api/file/:id", upload.single("file"), async (req, res) => {
 });
 
 //get specific single url to download examination file
+/**
+ * @swagger
+ * /api/file/{mex_id}:
+ *   get:
+ *     tags:
+ *       - Examination pdf file
+ *     summary: Retrieve file URLs for a specific MEX record file
+ *     description: Fetches the examination file associated with a given MEX ID and returns a pre-signed URL for downloading.
+ *     parameters:
+ *       - in: path
+ *         name: mex_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the MEX record whose file URLs need to be retrieved.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved file URLs.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   fileUrl:
+ *                     type: string
+ *                     format: uri
+ *                     example: "https://s3.example.com/bucket/file.pdf"
+ *       400:
+ *         description: Error loading image.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error loading image"
+ */
+
 app.get("/api/file/:mex_id", async (req, res) => {
   try {
     const id = req.params.mex_id;
@@ -127,6 +229,44 @@ app.get("/api/file/:mex_id", async (req, res) => {
     return res.status(400).send({ message: "Error loading image" });
   }
 });
+
+/**
+ * @swagger
+ * /api/file/{mex_id}:
+ *   delete:
+ *     tags:
+ *       - Examination pdf file
+ *     summary: Delete an examination file for a specific MEX record
+ *     description: Deletes the examination file associated with a given MEX ID from storage and updates the record.
+ *     parameters:
+ *       - in: path
+ *         name: mex_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the MEX record whose file needs to be deleted.
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the file.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "file deleted"
+ *       400:
+ *         description: Error while deleting the file.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "error while delete"
+ */
 
 app.delete("/api/file/:mex_id", async (req, res) => {
   try {
@@ -153,6 +293,9 @@ app.delete("/api/file/:mex_id", async (req, res) => {
   }
 });
 
+app.get("/api-docs.json", (req, res) => {
+  res.json(swaggerSpec); // This will return the Swagger JSON
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
