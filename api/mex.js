@@ -351,6 +351,7 @@ mex.get("/api/mex", async (req, res) => {
             bloodPressure: true,
             temperature: true,
             respiratoryRate: true,
+            pulse: true,
           },
         },
         RxList: true,
