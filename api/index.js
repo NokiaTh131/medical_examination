@@ -39,17 +39,18 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 //minIO client
 const minioClient = new Minio.Client({
-  endPoint: "s3.ap-southeast-1.amazonaws.com",
-  //local endpoint
-  //endPoint: "play.min.io",
-  //port: 9000,
-  useSSL: true,
-  accessKey: process.env.AWS_ACCESS_KEY_ID,
-  secretKey: process.env.AWS_SECRET_ACCESS_KEY,
-  // accessKey: "minioadmin", // Replace with your MinIO access key
-  // secretKey: "minioadmin",
-  region: process.env.AWS_REGION, //remove this when use local endpoint
+  // endPoint: "s3.ap-southeast-1.amazonaws.com",
+  // accessKey: process.env.AWS_ACCESS_KEY_ID,
+  // secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+  // region: process.env.AWS_REGION, //remove this when use local endpoint
+  endPoint: "localhost", // MinIO server address
+  port: 9400,
+  useSSL: false,
+  accessKey: process.env.MINIO_ACCESS_KEY_ID,
+  secretKey: process.env.MINIO_SECRET_ACCESS_KEY,
 });
+
+const objectbucket = process.env.AMPLIFY_BUCKET;
 
 const generateFileName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
@@ -70,7 +71,7 @@ const generateFileName = (bytes = 32) =>
 
 async function uploadFileToS3(file, fileName) {
   /*minIO version*/
-  await minioClient.putObject(process.env.AMPLIFY_BUCKET, fileName, file, {
+  await minioClient.putObject(objectbucket, fileName, file, {
     "Content-Type": "application/pdf",
     "Content-Disposition": "inline",
   });
@@ -215,7 +216,7 @@ app.get("/api/file/:mex_id", async (req, res) => {
     const fileWithUrls = await Promise.all(
       files.map(async (file) => {
         const url = await minioClient.presignedGetObject(
-          process.env.AMPLIFY_BUCKET,
+          objectbucket,
           file.examination_filename,
           30
         );
@@ -284,7 +285,7 @@ app.delete("/api/file/:mex_id", async (req, res) => {
     });
 
     await minioClient.removeObject(
-      process.env.AMPLIFY_BUCKET,
+      objectbucket,
       String(file.examination_filename)
     );
     res.send({ message: "file deleted" });
