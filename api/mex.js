@@ -337,7 +337,7 @@ mex.get("/api/mex", async (req, res) => {
   try {
     //mex_id
     const id = parseInt(req.query.id);
-    const data = await fetch(`http://localhost:3001/api/file/${id}`, {
+    const data = await fetch(`http://10.10.184.148:5004/api/file/${id}`, {
       method: "GET",
     });
     const download_url = await data.json();

@@ -299,7 +299,7 @@ app.get("/api-docs.json", (req, res) => {
 });
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://10.10.184.148:${PORT}`);
 });
 
 export default app;
