@@ -12,7 +12,7 @@ services:
       - MINIO_SECRET_ACCESS_KEY=monkeydonaldtrumpluffy
       - AMPLIFY_BUCKET=clinic-monkol-examfile
     depends_on:
-      - postgres
+      - db
       - minio
 
   db:
