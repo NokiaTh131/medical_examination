@@ -36,8 +36,6 @@ services:
     environment:
       MINIO_ROOT_USER: inwzadonaldtrump1975
       MINIO_ROOT_PASSWORD: monkeydonaldtrumpluffy
-      MINIO_BROWSER_REDIRECT_URL: "https://clinic.se.cpe.eng.cmu.ac.th/exam/minio/ui/"
-      MINIO_SERVER_URL: "https://clinic.se.cpe.eng.cmu.ac.th/exam/minio/"
     ports:
       - "9400:9000" # API
       - "9401:9001" # Console
