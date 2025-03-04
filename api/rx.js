@@ -81,7 +81,7 @@ rx.use(express.json()); // Middleware to parse JSON bodies
  *                   type: object
  *                   description: Error details.
  */
-rx.post("/api/rx", async (req, res) => {
+rx.post("exam/api/rx", async (req, res) => {
   try {
     const { medicalName, quantity, use, note, mexId, unit } = req.body;
 
@@ -143,7 +143,7 @@ rx.post("/api/rx", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-rx.delete("/api/rx/:id", async (req, res) => {
+rx.delete("exam/api/rx/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -223,7 +223,7 @@ rx.delete("/api/rx/:id", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-rx.get("/api/rx/:mex_id", async (req, res) => {
+rx.get("exam/api/rx/:mex_id", async (req, res) => {
   try {
     const mexId = parseInt(req.params.mex_id);
 

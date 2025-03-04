@@ -137,7 +137,7 @@ async function uploadFileToS3(file, fileName) {
  *                   example: "Error uploading file"
  */
 
-app.post("/api/file/:id", upload.single("file"), async (req, res) => {
+app.post("exam/api/file/:id", upload.single("file"), async (req, res) => {
   try {
     const mex_id = req.params.id;
     const file = req.file;
@@ -207,7 +207,7 @@ app.post("/api/file/:id", upload.single("file"), async (req, res) => {
  *                   example: "Error loading image"
  */
 
-app.get("/api/file/:mex_id", async (req, res) => {
+app.get("exam/api/file/:mex_id", async (req, res) => {
   try {
     const id = req.params.mex_id;
     const files = await prisma.mEX.findMany({
@@ -269,7 +269,7 @@ app.get("/api/file/:mex_id", async (req, res) => {
  *                   example: "error while delete"
  */
 
-app.delete("/api/file/:mex_id", async (req, res) => {
+app.delete("exam/api/file/:mex_id", async (req, res) => {
   try {
     const mex_id = req.params.mex_id;
     const file = await prisma.mEX.findUnique({
@@ -294,7 +294,7 @@ app.delete("/api/file/:mex_id", async (req, res) => {
   }
 });
 
-app.get("/api-docs.json", (req, res) => {
+app.get("exam/api-docs.json", (req, res) => {
   res.json(swaggerSpec); // This will return the Swagger JSON
 });
 // Start server

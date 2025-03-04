@@ -74,7 +74,7 @@ mex.use(express.json()); // Middleware to parse JSON bodies
  *                   type: object
  *                   description: Error details.
  */
-mex.post("/api/mex", async (req, res) => {
+mex.post("exam/api/mex", async (req, res) => {
   try {
     const {
       docID,
@@ -180,7 +180,7 @@ mex.post("/api/mex", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.get("/api/mex/:patient_id", async (req, res) => {
+mex.get("exam/api/mex/:patient_id", async (req, res) => {
   try {
     const id = req.params.patient_id;
     const allMex = await prisma.mEX.findMany({
@@ -333,13 +333,16 @@ mex.get("/api/mex/:patient_id", async (req, res) => {
  *                   type: string
  *                   example: "MEX not found"
  */
-mex.get("/api/mex", async (req, res) => {
+mex.get("exam/api/mex", async (req, res) => {
   try {
     //mex_id
     const id = parseInt(req.query.id);
-    const data = await fetch(`http://10.10.184.148:5004/api/file/${id}`, {
-      method: "GET",
-    });
+    const data = await fetch(
+      `https://clinic.se.cpe.eng.cmu.ac.th/exam/api/file/${id}`,
+      {
+        method: "GET",
+      }
+    );
     const download_url = await data.json();
     const mex = await prisma.mEX.findUnique({
       where: {
@@ -479,7 +482,7 @@ mex.get("/api/mex", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.put("/api/mex/:id", async (req, res) => {
+mex.put("exam/api/mex/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = req.body;
@@ -495,13 +498,6 @@ mex.put("/api/mex/:id", async (req, res) => {
     console.error("Error during update:", error);
     res.status(400).send({ message: "Error updating MEX", error });
   }
-});
-
-//api fetch from patient information group
-mex.get("/patient/:patient_id", async (req, res) => {
-  //get patient by id
-  const patient_id = req.params.patient_id;
-  res.send({ patient_id: patient_id });
 });
 
 /**
@@ -544,7 +540,7 @@ mex.get("/patient/:patient_id", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.delete(`/api/mex`, async (req, res) => {
+mex.delete(`exam/api/mex`, async (req, res) => {
   try {
     const id = parseInt(req.query.id); // Convert `id` to an integer (if necessary)
     await prisma.mEX.delete({
@@ -637,7 +633,7 @@ mex.delete(`/api/mex`, async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.post("/api/patient_record/:mex_id", async (req, res) => {
+mex.post("exam/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mexId = parseInt(req.params.mex_id);
     const { bloodPressure, pulse, temperature, respiratoryRate } = req.body;
@@ -717,7 +713,7 @@ mex.post("/api/patient_record/:mex_id", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.get("/api/patient_record/:mex_id", async (req, res) => {
+mex.get("exam/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mex_id = req.params.mex_id;
     const Record = await prisma.patientRecord.findMany({
