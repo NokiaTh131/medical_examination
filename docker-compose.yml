@@ -37,13 +37,12 @@ services:
       MINIO_ROOT_USER: inwzadonaldtrump1975
       MINIO_ROOT_PASSWORD: monkeydonaldtrumpluffy
       MINIO_SERVER_URL: "https://clinic.se.cpe.eng.cmu.ac.th"
-      MINIO_BROWSER_REDIRECT_URL: "https://clinic.se.cpe.eng.cmu.ac.th/exam/minio/ui"
     ports:
-      - "9400:9000" # API
-      - "9401:9001" # Console
+      - "9400:9400" # API
+      - "9401:9401" # Console
     volumes:
       - ./minio_storage:/data # Data will be stored here
-    command: server --address ":9000" --console-address ":9001" /data
+    command: server --address ":9400" --console-address ":9401" /data
     restart: always
 
 volumes:
