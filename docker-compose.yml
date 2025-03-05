@@ -12,7 +12,7 @@ services:
       - MINIO_ACCESS_KEY_ID=inwzadonaldtrump1975
       - MINIO_SECRET_ACCESS_KEY=monkeydonaldtrumpluffy
       - AMPLIFY_BUCKET=clinic-monkol-examfile
-      - ENDPOINT=https://clinic.se.cpe.eng.cmu.ac.th
+      - ENDPOINT=clinic.se.cpe.eng.cmu.ac.th
     depends_on:
       - db
       - minio
@@ -38,11 +38,11 @@ services:
       MINIO_ROOT_PASSWORD: monkeydonaldtrumpluffy
       MINIO_SERVER_URL: "https://clinic.se.cpe.eng.cmu.ac.th"
     ports:
-      - "9400:9400" # API
-      - "9401:9401" # Console
+      - "9400:9000" # API
+      - "9401:9001" # Console
     volumes:
       - ./minio_storage:/data # Data will be stored here
-    command: server --address ":9400" --console-address ":9401" /data
+    command: server --address ":9000" --console-address ":9001" /data
     restart: always
 
 volumes:

@@ -45,7 +45,7 @@ const minioClient = new Minio.Client({
   // region: process.env.AWS_REGION, //remove this when use local endpoint
   endPoint: process.env.ENDPOINT, // MinIO server address
   port: 9400,
-  useSSL: false,
+  useSSL: true,
   accessKey: process.env.MINIO_ACCESS_KEY_ID,
   secretKey: process.env.MINIO_SECRET_ACCESS_KEY,
 });
