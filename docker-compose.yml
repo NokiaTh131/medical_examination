@@ -41,7 +41,7 @@ services:
       - "9401:9001" # Console
     volumes:
       - ./minio_storage:/data # Data will be stored here
-    command: server --console-address ":9001" /data
+    command: server --address ":9000" --console-address ":9001" /data
     restart: always
 
 volumes:
