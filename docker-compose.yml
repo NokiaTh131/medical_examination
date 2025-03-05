@@ -12,7 +12,7 @@ services:
       - MINIO_ACCESS_KEY_ID=inwzadonaldtrump1975
       - MINIO_SECRET_ACCESS_KEY=monkeydonaldtrumpluffy
       - AMPLIFY_BUCKET=clinic-monkol-examfile
-      - ENDPOINT=10.10.184.148
+      - ENDPOINT=https://clinic.se.cpe.eng.cmu.ac.th
     depends_on:
       - db
       - minio
