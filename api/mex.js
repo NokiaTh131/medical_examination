@@ -338,7 +338,7 @@ mex.get("/exam/api/mex", async (req, res) => {
     //mex_id
     const id = parseInt(req.query.id);
     const data = await fetch(
-      `https://clinic.se.cpe.eng.cmu.ac.th/exam/api/file/${id}`,
+      `https://exam.clinic.se.cpe.eng.cmu.ac.th/exam/api/file/${id}`,
       {
         method: "GET",
       }
