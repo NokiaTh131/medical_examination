@@ -74,7 +74,7 @@ mex.use(express.json()); // Middleware to parse JSON bodies
  *                   type: object
  *                   description: Error details.
  */
-mex.post("/exam/api/mex", async (req, res) => {
+mex.post("/api/mex", async (req, res) => {
   try {
     const {
       docID,
@@ -180,7 +180,7 @@ mex.post("/exam/api/mex", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.get("/exam/api/mex/:patient_id", async (req, res) => {
+mex.get("/api/mex/:patient_id", async (req, res) => {
   try {
     const id = req.params.patient_id;
     const allMex = await prisma.mEX.findMany({
@@ -333,7 +333,7 @@ mex.get("/exam/api/mex/:patient_id", async (req, res) => {
  *                   type: string
  *                   example: "MEX not found"
  */
-mex.get("/exam/api/mex", async (req, res) => {
+mex.get("/api/mex", async (req, res) => {
   try {
     //mex_id
     const id = parseInt(req.query.id);
@@ -479,7 +479,7 @@ mex.get("/exam/api/mex", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.put("/exam/api/mex/:id", async (req, res) => {
+mex.put("/api/mex/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = req.body;
@@ -537,7 +537,7 @@ mex.put("/exam/api/mex/:id", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.delete(`/exam/api/mex`, async (req, res) => {
+mex.delete(`/api/mex`, async (req, res) => {
   try {
     const id = parseInt(req.query.id); // Convert `id` to an integer (if necessary)
     await prisma.mEX.delete({
@@ -630,7 +630,7 @@ mex.delete(`/exam/api/mex`, async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.post("/exam/api/patient_record/:mex_id", async (req, res) => {
+mex.post("/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mexId = parseInt(req.params.mex_id);
     const { bloodPressure, pulse, temperature, respiratoryRate } = req.body;
@@ -710,7 +710,7 @@ mex.post("/exam/api/patient_record/:mex_id", async (req, res) => {
  *                   type: object
  *                   description: Error details.
  */
-mex.get("/exam/api/patient_record/:mex_id", async (req, res) => {
+mex.get("/api/patient_record/:mex_id", async (req, res) => {
   try {
     const mex_id = req.params.mex_id;
     const Record = await prisma.patientRecord.findMany({
