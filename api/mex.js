@@ -337,9 +337,12 @@ mex.get("/api/mex", async (req, res) => {
   try {
     //mex_id
     const id = parseInt(req.query.id);
-    const data = await fetch(`http://10.10.184.148:5004/exam/api/file/${id}`, {
-      method: "GET",
-    });
+    const data = await fetch(
+      `https://exam.clinic.se.cpe.eng.cmu.ac.th/api/file/${id}`,
+      {
+        method: "GET",
+      }
+    );
     const download_url = await data.json();
     const mex = await prisma.mEX.findUnique({
       where: {
