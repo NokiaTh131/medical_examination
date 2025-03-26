@@ -1,14 +1,10 @@
 # for who want to test, add .env file include these API key
 
-* DATABASE_URL="postgresql://user:password@localhost:5432/db"
-* AWS_REGION=ap-southeast-1
-* AWS_ACCESS_KEY_ID=AKIAVCQNHIKULM7HDNXI
-* AWS_SECRET_ACCESS_KEY=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
-* AMPLIFY_BUCKET=demo-monkol-images
-   #### DO NOT EXPOSE THIS!!
-
-## Need to do in Sprint 2
-
+* DATABASE_URL
+* MINIO_ACCESS_KEY_ID
+* MINIO_SECRET_ACCESS_KEY
+* AMPLIFY_BUCKET
+* ENDPOINT
 ### part 1 (addition from sprint1)
 
 * change database: Procedure and Appointment Storage from MEX Table to individual Table.(done)
